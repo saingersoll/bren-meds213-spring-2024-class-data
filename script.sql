@@ -346,3 +346,73 @@ SELECT Code FROM Species
 -- To remove an entire thing use the word DROP 
 -- this will allow us to remove an old preview configuration and write over it
 DROP VIEW v;
+
+
+-- Monday Week 5 April 29
+
+-- inserting data
+-- We don't want to do it this way bc it's not explicit
+SELECT * FROM Species;
+.maxrows 8
+INSERT INTO Species VALUES ('abcd','thing','scientific name', NULL);
+
+SELECT * FROM Species;
+
+
+-- you can explicitly label columns
+INSERT INTO Species (Common_name, Scientific_name, Code, Relevance)
+    -- this will match the column order
+    VALUES ('thing 2', 'another_scientific name', 'efgh', NULL);
+
+-- take advantage of default values
+INSERT INTO Species (Common_name, Code) 
+VALUES ('thing3', 'ijkl');
+
+SELECT * FROM Species;
+.nullvalue -NULL-
+
+
+
+-- UPDATE & DELETE 
+-- CAUTION: THESE ARE VERY DANGEROUS COMMANDS
+-- VERY POWERFULL
+--  E.G. DELETE FROM Species (without a where clause) will remove the entire table
+-- since we don't start with the WHERE clause, we need a safety net
+-- here are some examples
+
+
+-- confirm the rows you want to delete first
+SELECT * FROM Species
+WHERE Relevance = 'Study species';
+
+-- now that i've confirmed these are the rows I want
+-- let's edit the previous clause
+DELETE * FROM Species
+WHERE Relevance = 'Study species';
+
+
+
+-- incomplete statement 
+FROM Species WHERE ...
+
+-- Then after checking add delete
+DELETE FROM Species WHERE 
+
+
+-- update instances 
+UPDATE Species SET Relevance = 'not sure yet' 
+WHERE Relevance IS NULL;
+
+SELECT * FROM Species;
+
+-- remove instances
+DELETE Species
+DELETE FROM Species 
+WHERE Relevance = 'not sure yet';
+
+-- check
+
+SELECT * FROM Species
+
+
+-
