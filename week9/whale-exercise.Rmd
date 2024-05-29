@@ -17,30 +17,38 @@ Please complete this exercise in pairs or groups of three. Each group should dow
 
 #### Package & Data
 
-```{r}
-
+```{r message = F}
+library(tidyverse)
 ```
 
 #### Inspect the Dataset
 
 ```{r}
-
+whale_data <- read_csv("whale-sdc.csv",
+                       show_col_types = F)
+whale_data
 ```
 
 #### Q1. How many direct identifiers are present in this dataset? What are they?
 
-A:
+A: case_id (indirect | psuedonym), lat/ long,  fishery_license, 
 
 #### **Q2. What attributes would you consider quasi-identifiers? Why?**
 
-A:
+A: origin, pairing lat or long with county, county, state
 
 #### **Q3. What types of variables are they? Define them. (numeric, integer, factor or string)**
 
 Make sure to have them set correctly.
 
 ```{r}
+whale_data <- varToFactor(obj = whale_data, var = c("inj_level", "infraction_type", "condition", "county", "state", "type", "gear", "origin", "fine"))
 
+glimpse(whale_data)
+
+# these are less valuable in our assessment, so we're making them numeric instead of factors
+# numeric is good for quantiy, not identifiers
+whale_data <- varToNumeric(obj = whale_data, var = c("year", "month", "lat", "long"))
 ```
 
 #### ***4 Considering your answers to questions 1, 2 and 3 create a SDC problem.***
@@ -48,13 +56,25 @@ Make sure to have them set correctly.
 #### **Q4.1 What is the risk of re-identification for this dataset?**
 
 ```{r}
-
+sdc_initial <- createSdcObj(dat = whale_data,
+                            keyVars = c("state", "origin", "county"),
+                            weightVar = NULL,
+                            hhId = NULL,
+                            strataVar = NULL,
+                            pramVars = NULL,
+                            excludeVars = c("lat", "long", "fishery_license"),
+                            seed = 0,
+                            randomizeRecords = FALSE,
+                            alpha = c(1)
+                            )
+sdc_initial
 ```
 
 #### Q4.2 To what extent does this dataset violate k-anonymity?
 
 ```{r}
-
+print(sdc_initial, 'kAnon')
+print(sdc_initial, 'ls')
 ```
 
 #### *5. Consider techniques that could reduce the risk of re-identification.*
@@ -62,10 +82,24 @@ Make sure to have them set correctly.
 #### Q5.1 Apply one non-perturbative method to a variable of your choice. How effective was it in lowering the disclosure risk?
 
 ```{r}
+table(sdc_initial@manipKeyVars$county)
 
+table(sdc_initial@manipKeyVars$origin)
+
+sdc_initial <- groupAndRename(obj = sdc_initial, 
+                              var = "origin",
+                              before = c("tribal", "recreational"),
+                              after = c("non-commercial")
+                              )
+
+table(sdc_initial@manipKeyVars$origin)
+sdc_initial
+sdc_initial@risk$global$risk
 ```
 
 #### Q5.2 Apply ( k-3) anonymization to this dataset.
+
+Let's go for commercial, non-commercial
 
 ```{r}
 

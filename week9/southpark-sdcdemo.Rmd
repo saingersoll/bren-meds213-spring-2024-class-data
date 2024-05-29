@@ -124,7 +124,7 @@ Check the results below and the number of observations that violate 2-5 anonymit
 sdcInitial@risk$global$risk
 
 # what's the risk for an individual?
-sdcInitial@risk$individual
+head(sdcInitial@risk$individual, 3)
 ```
 
 Ouch! What does that score mean?
@@ -170,14 +170,14 @@ sdcInitial <- groupAndRename(obj= sdcInitial, var= c("income"), before=c("10,000
 ***Age***
 
 ```{r}
-#Frequencies of age before recording
-
+#Frequencies of income before recoding
+table(sdcInitial@manipKeyVars$age)
 ```
 
 ```{r}
 #Recode Age 
 #Top
-sdcInitial <- groupAndRename(obj= sdcInitial, var= c("age"), before=c(?), after=c(?))  
+sdcInitial <- groupAndRename(obj= sdcInitial, var= c("age"), before=c(9), after=c(10))  
 #Bottom
 sdcInitial <- groupAndRename(obj= sdcInitial, var= c("age"), before=c("?"), after=c("?"))
 ```
@@ -210,7 +210,7 @@ Time for a more powerful technique. Let's use the k-anonymization function!
 
 ```{r}
 #Local suppression to obtain k-anonymity
-?
+sdcInitial <- kAnon(sdcInitial, k= 5)
   
 #Setting the parameters that we aim for at least 5 observations sharing the same attributes in the dataset.
 #Alternatively, we could have set the order of importance for each keyvariables
@@ -224,11 +224,13 @@ Time to check it again:
 ```{r}
 
 #Global risk
-
+sdcInitial@risk$global$risk
 
 #K-anon
-
-
+# We lost a lot of data using kAnon. 
+# this will make it difficult for users in the future to use the data
+print(sdcInitial, 'kAnon')
+print(sdcInitial, 'ls')
 
 ```
 
@@ -242,7 +244,7 @@ Time to measure the utility and information loss for the anonymized dataset.
 #First, we retrieve the total number of suppressions for each categorical key variable
 print(sdcInitial, 'ls')
 ```
-
+A ton of NA values were introduced because our data is more anonymize the info. This level 5 really removes a ton of info from this 100 observation data set. 
 ```{r}
 #We can also compare the number of NAs before and after our interventions
 #Store the names of all categorical key variables in a vector
@@ -270,7 +272,7 @@ Based on the results, we can tell PC Principal and Mayor McDaniels that the supp
 
 ```{r}
 #Adding a new randomized ID-variable
-sdcInitial <- createNewID(sdcInitial, newID="?", withinVar="?")
+sdcInitial <- createNewID(sdcInitial, newID="ID", withinVar="stu_id")
 ```
 
 #### **Exporting the anonymized dataset**
